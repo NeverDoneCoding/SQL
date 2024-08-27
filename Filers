@@ -1,0 +1,20 @@
+SELECT 
+    dp.policy_name AS "Rule Title",
+    COUNT(CASE WHEN da.passed = true THEN da.asset_id ELSE NULL END) AS "Assets Passed",
+    COUNT(CASE WHEN da.passed = false THEN da.asset_id ELSE NULL END) AS "Assets Failed",
+    ROUND(
+        COUNT(CASE WHEN da.passed = true THEN da.asset_id ELSE NULL END)::decimal /
+        COUNT(da.asset_id) * 100, 2
+    ) AS "Compliance Percentage"
+FROM 
+    dim_policy dp
+JOIN 
+    dim_policy_asset dp_asset ON dp.policy_id = dp_asset.policy_id
+JOIN 
+    dim_asset da ON dp_asset.asset_id = da.asset_id
+WHERE 
+    dp.policy_name = 'Your Policy Name'
+GROUP BY 
+    dp.policy_name
+ORDER BY 
+    dp.policy_name;
