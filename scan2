@@ -1,0 +1,20 @@
+SELECT
+    da.ip_address AS "Asset IP",
+    da.host_name AS "Asset Name",
+    dsp.policy_name AS "Scan Policy",
+    ds.compliance_status AS "Compliance Status",
+    ds.compliance_score AS "Compliance Score"
+FROM
+    dim_asset da
+    JOIN fact_asset_scan_vulnerability_finding fasvf ON da.asset_id = fasvf.asset_id
+    JOIN dim_scan ds ON fasvf.scan_id = ds.scan_id
+    JOIN dim_scan_policy dsp ON ds.scan_policy_id = dsp.scan_policy_id
+WHERE
+    dsp.policy_name = 'Your Scan Policy Name'
+    AND ds.scan_end_timestamp = (
+        SELECT MAX(scan_end_timestamp)
+        FROM dim_scan
+        WHERE dim_scan.scan_policy_id = dsp.scan_policy_id
+    )
+ORDER BY
+    "Compliance Score" ASC;
