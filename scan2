@@ -1,15 +1,26 @@
--- Replace 'Your Scan Policy Name' with the actual name of the scan policy
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public';
+
+
+SELECT column_name 
+FROM information_schema.columns 
+WHERE table_name = 'your_table_name';
+
+
 SELECT
-    a.ip_address AS "Asset IP",
-    a.hostname AS "Asset Name",
-    s.policy_name AS "Scan Policy",
-    sc.compliance_status AS "Compliance Status",
-    sc.compliance_score AS "Compliance Score"
+    da.ip_address AS "Asset IP",
+    da.hostname AS "Asset Name",
+    dst.template_name AS "Scan Template",
+    fsvf.policy_name AS "Policy Name",
+    fsvf.compliance_status AS "Compliance Status",
+    fsvf.compliance_score AS "Compliance Score"
 FROM
-    asset a
-    JOIN scan s ON a.asset_id = s.asset_id
-    JOIN scan_compliance sc ON s.scan_id = sc.scan_id
+    fact_asset_scan_vulnerability_finding fsvf
+    JOIN dim_asset da ON fsvf.asset_id = da.asset_id
+    JOIN dim_scan ds ON fsvf.scan_id = ds.scan_id
+    JOIN dim_scan_template dst ON ds.scan_template_id = dst.scan_template_id
 WHERE
-    s.policy_name = 'Your Scan Policy Name'
+    fsvf.policy_name = 'Your Scan Policy Name'
 ORDER BY
-    sc.compliance_score ASC;
+    fsvf.compliance_score ASC;
