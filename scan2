@@ -24,3 +24,20 @@ WHERE
     fsvf.policy_name = 'Your Scan Policy Name'
 ORDER BY
     fsvf.compliance_score ASC;
+
+
+SELECT
+    da.ip_address AS "Asset IP",
+    da.hostname AS "Asset Name",
+    ds.policy_name AS "Scan Policy",
+    fsc.compliance_status AS "Compliance Status",
+    fsc.compliance_score AS "Compliance Score"
+FROM
+    fact_asset_scan_compliance fsc
+    JOIN dim_asset da ON fsc.asset_id = da.asset_id
+    JOIN dim_scan ds ON fsc.scan_id = ds.scan_id
+    JOIN dim_scan_policy dsp ON ds.scan_policy_id = dsp.scan_policy_id
+WHERE
+    dsp.policy_name = 'Your Scan Policy Name'
+ORDER BY
+    fsc.compliance_score ASC;
