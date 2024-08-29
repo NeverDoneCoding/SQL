@@ -1,17 +1,15 @@
+-- Replace 'Your Scan Policy Name' with the actual name of the scan policy
 SELECT
-    da.ip_address AS "Asset IP",
-    da.host_name AS "Asset Name",
-    dst.name AS "Scan Template",
-    fas.policy_name AS "Compliance Policy",
-    fas.compliance_status AS "Compliance Status",
-    fas.compliance_score AS "Compliance Score"
+    a.ip_address AS "Asset IP",
+    a.hostname AS "Asset Name",
+    s.policy_name AS "Scan Policy",
+    sc.compliance_status AS "Compliance Status",
+    sc.compliance_score AS "Compliance Score"
 FROM
-    dim_asset da
-    JOIN fact_asset_scan_vulnerability_finding fasvf ON da.asset_id = fasvf.asset_id
-    JOIN dim_scan ds ON fasvf.scan_id = ds.scan_id
-    JOIN dim_scan_template dst ON ds.scan_engine_id = dst.scan_engine_id
-    JOIN fact_asset_scan_compliance fas ON da.asset_id = fas.asset_id AND ds.scan_id = fas.scan_id
+    asset a
+    JOIN scan s ON a.asset_id = s.asset_id
+    JOIN scan_compliance sc ON s.scan_id = sc.scan_id
 WHERE
-    fas.policy_name = 'Your Scan Policy Name'
+    s.policy_name = 'Your Scan Policy Name'
 ORDER BY
-    "Compliance Score" ASC;
+    sc.compliance_score ASC;
